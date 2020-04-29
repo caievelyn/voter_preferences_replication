@@ -1,15 +1,23 @@
 ---
-title: "Milestone 8: Replication of 'Identifying voter preferences for politicians’ personal attributes: a conjoint experiment in Japan'"
+title: "Replication Paper: 'Identifying voter preferences for politicians’ personal attributes: a conjoint experiment in Japan'"
 author: "Evelyn Cai"
-date: "4/24/2020"
+date: "4/28/2020"
 output:
   bookdown::pdf_document2:
     includes:  
-      in_header: my_header.tex
+      in_header: Header/my_header.tex
     keep_tex: true
     toc: true
+header-includes:
+    - \usepackage{setspace}\doublespacing
+    - \usepackage{float}
+spacing: double
 indent: true
-bibliography: ["conjoint-method.bib", "japan.bib", "salience.bib", "gender.bib", "electoral.bib", "leeper.bib", "R.bib", "tidyverse.bib"]
+fontsize: 12
+geometry: margin=1in
+Bibliogrpahy: \singlespacing
+abstract: \singlespacing Horiuchi, Smith, and Yamamoto (2020) found through differences between observational data and their conjoint survey results that Japanese voters\' voting preferences are dependent on external factors. The conjoint survey results yielded consistent voter preferences across different levels of knowledge on electoral systems; however, observational data shows that voters\' preferences are not consistent in different electoral systems. I was able to successfuly replicate these results and findings. My extension focuses on examining the difference in marginal means instead of the difference of average marginal component effects, which can change the treatment effect estimate.
+bibliography: ["Bib-files/conjoint-method.bib", "Bib-files/japan.bib", "Bib-files/salience.bib", "Bib-files/gender.bib", "Bib-files/electoral.bib", "Bib-files/leeper.bib", "Bib-files/R.bib", "Bib-files/tidyverse.bib"]
 biblio-style: "apalike"
 ---
 
@@ -35,8 +43,8 @@ library(patchwork)
 
 # Read in .csv files as dataframes
 
-DD_lo <- read_csv("actual-lower-2014-allcandidates.csv")
-DD_up <- read_csv("actual-upper-2013-allcandidates.csv")
+DD_lo <- read_csv("Data/actual-lower-2014-allcandidates.csv")
+DD_up <- read_csv("Data/actual-upper-2013-allcandidates.csv")
 
 # Create bibliography files, commented out because already did so
 
@@ -146,48 +154,41 @@ DD_up_win <- DD_up %>%
   filter(win == 1)
 ```
 
-&nbsp;
-
-## Abstract
-
-Horiuchi, Smith, and Yamamoto (2020) found through differences between observational data and their conjoint survey results that Japanese voters' voting preferences are dependent on external factors. The conjoint survey results yielded consistent voter preferences across different levels of knowledge on electoral systems; however, observational data shows that voters' preferences are not consistent in different electoral systems. I was able to successfuly replicate these results and findings. My extension focuses on examining the difference in marginal means instead of the difference of average marginal component effects, which can change the treatment effect estimate.
-
 \pagebreak
 
 ## Introduction
 
-&nbsp;
 
 In Yusaku Horiuchi, Teppei Yamamoto and Daniel Smith's (2020) paper *Identifying voter preferences for politicians’ personal attributes: a conjoint experiment in Japan*, they examined observational data from Japanese political candidates and conducted a conjoint survey experiment to determine Japanese voters' attribute preferences and under which circumstances they can be altered. They also explored the effect of a candidate's gender on their electability likelihood and its interaction with other variables, such as awareness of Japan's electoral groups. While it is commonly established that the personal attributes of political candidates do have an impact on voter choice, as they portray in their literature review, they also highlight the fact that certain traits' interaction effects may provide for an explanation for why candidates were chosen (@R-yamamoto). For example, men were "awarded" more for political experience than women, which may explain the severe lack of female representation despite the consistency in gender preferences from the conjoint survey (@R-yamamoto). They conducted conjoint analyses involving Average Marginal Component Effects (AMCEs) and Average Component Interaction Effects (ACIEs) to determine the effect of different variables on candidate selection likelihood, and whether said variables interacted with each othe in which ways.
 
-&nbsp;
+
 
 In replicating their paper and conducting data analysis, I used R, an open source programming language (@R). All of Horiuchi, Smith, & Yamamoto's code has been generously made available through the Dataverse.^[Horiuchi, Yusaku; Smith, Daniel M.; Yamamoto, Teppei, 2018, "Replication Data for: Identifying Voter Preferences for Politicians' Personal Attributes: A Conjoint Experiment in Japan", https://doi.org/10.7910/DVN/KCIADO, Harvard Dataverse, V1] All analysis that I have conducted in this exercise can be found at the working Github repository.^[Working repository can be found here: https://github.com/caievelyn/voter_preferences_replication]
 
-&nbsp;
+
 
 With the available code through Dataverse, I was able to replicate the main findings of the paper, which display the AMCEs of different candidate features. The Appendix (see section 0.6) features additional ACIE plots, as well as the mosaic and co-correlation matrices. Charts not include in this replication are additional mosaic plots; the original Appendix had many based off of variables other than age and gender. Similarly, many additional ACIE plots charted the relationship between dynastic politicans and other variables. In the author's original paper and appendix, plots that display analyses using observational data are also present. Diving deeper into the gap between the experimental and observation data, I applied Leeper *et al.*'s (2019) `cregg` package to the dataset, calculating and displaying the marginal means rather than AMCEs (@leeper). Marginal means are useful because they avoid setting an arbitrary baseline for comparison, as opposed to AMCEs. This application is significant because the adjusted treatment effect estimates are likely different and could be significantly so.
 
-&nbsp;
+
 
 ## Literature Review
 
-&nbsp;
+
 
 Horiuchi, Smith, & Yamamoto (2020) were also interested in the complexities introduced by the interaction between desired personal attributes and characteristics of election systems. For example, Rule and Zimmerman (1994) found that proportional representation (PR) systems tended to do better in terms of gender parity than first-pass-the-post systems (@gender). Additionally, systems that emphasize voting for a candidate as opposed to voting for a party lend more salience to candidates’ personal attributes, giving their attributes’ desirability (or lack thereof) more weight in the eyes of the voter (@R-salience). As such, Horiuchi et al. (2020) wanted to tease out this relationship: Did Japanese voters really prefer male candidates over female candidates at the baseline, or was this preference influenced by characteristics of the system?
 
-&nbsp;
+
 
 Japan is a useful case study because of its high “intra-country variation” in electoral systems (@electoral). Horiuchi, Smith, & Yamamoto (2020) tested for whether knowledge of said electoral systems would impact voter preferences using a randomly assigned experiment, and found that there were significant and consistent indications of voter preferences even without priming with knowledge of electoral systems (@R-yamamoto). They conducted a conjoint survey, in which different candidate attributes were completely randomized and presented for a participant to choose the candidate of their choice. This method of conjoint experiments as applied to political science was popularized by Hainmueller *et al.* (@R-conjointmethod). Another method employed in the replication paper was compared observational data of actual politicians to the conjoint experiment results. This comparison revealed that the actual representatives in Japan’s parliament are very different from the “ideal” candidates of the participants, demonstrating that other variables that weren’t captured in the conjoint experiment play a large role in elections, such as party candidate recruitment systems (@R-yamamoto).
 
-&nbsp;
+
 
 Horiuchi, Smith, & Yamamoto (2020) also checked the conjoint data against the actual data of real elected politicians and drew conclusions from the similarities and differences expressed in terms of preferred candidate attributes. Additionally, there were controls for knowledge priming in their conjoint experiment. A control group had no sort of priming about Japan’s electoral systems, whereas a treatment group was primed with knowledge about Japan’s electoral systems (such as the relationship between voting for a party and proportional representation). They found that there was only one of 56 statistically significant differences in attribute preferences. However, interestingly enough, the actual observations of elected candidates do reveal that there is a discrepancy in the type of candidate elected when constituents are aware of how electoral systems function versus when they are unaware. To parse out the interaction effects of features such as experience and age with the gender variable, the authors calculated ACIEs for the gender variable. The results are displayed below, and reveal that male and female candidates are in fact rewarded/ punished differently based on gender. This finding facilitated the authors' conclusion that external factors, such as party recruitment tactics, are key in influencing voter preferences, rather than electoral systems directly influencing voter preferences as a nature of their configurations.
 
 ```{r conjoint_data, include = FALSE, cache = TRUE}
 
 # Load data file
-load("conjoint.RData")
+load("Data/conjoint.RData")
 
 # Rename the volumns with multiple strings for names, which confuses cj()
 DD <- DD %>%
@@ -285,7 +286,7 @@ Thanks to the available data and code, written primarily in base R, I was able t
 
 ## Extension
 
-&nbsp;
+
 
 According to Leeper *et al.* (2019), a flaw with interpreting "differences in conditional AMCEs as differences in underlying preferences" exists because of how the subgroups that are being compared are chosen, and whether there are any meaningful *absolute* differences (@leeper). Finding the marginal means, then, are useful because there are no baseline values for comparison, but rather allows all variable levels to be compared in a relative sense. 
 
@@ -398,21 +399,21 @@ mm_2 + z + plot_layout(widths = c(1, 1))
 
 ## Conclusion
 
-&nbsp;
+
 
 Through this replication of Horiuchi, Smith, & Yamamoto's (2020) paper, I was able to replicate their main findings. There were significant voter preferences consistent even across the treatment and control groups, which received information regarding different electoral systems. Some of these observations include a preference for non-celebrity candidates, candidates from within the prefecture, and younger political candidates. There was no gender preference, all other attributes held equal. 
 
-&nbsp;
+
 
 However, observational data contradicts these consistent preferences found in conjoint analyses; Japan has a persistently unequal parliamentary body. To make sense of this gap, the authors investigated the ACIE of specific variables, namely the gender variable. Importantly, they found that women received less of a reward in voters' eyes for having more experience, relative to their male counterparts. As such, Horiuchi, Smith, & Yamamoto (2020) looked at external explanations, such as party recruitment tactics, to account for the legislative gender inequality and gap between experimental and observational data.
 
-&nbsp;
+
 
 My extension of the paper looked at marginal means instead of AMCEs. I was most interested in comparing the difference in marginal means for female and male candidates against the difference in AMCEs for female and male candidates. 
 
 ## Appendix
 
-&nbsp;
+
 
 Results from Horiuchi, Smith, & Yamamoto (2020) were successfully replicated. As an example, here is Figure A.1 from page 2 of the online Appendix. Below it is the co-correlation matrix as displayed on Page 7 of the online Appendix. 
 
@@ -595,6 +596,8 @@ for(i in c(2,4)){
 
 *Figure 5*: Co-correlation matrix providing the correlation coefficients between two variables. Negative values are shaded in red and positive values are shaded in blue. The intensity of the color corresponds to the magnitude of the correation coefficient.
 
+\pagebreak
 
+\linespread{1}\selectfont
 
 ## Bibliography
