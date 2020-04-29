@@ -308,6 +308,10 @@ DD_mm_diff <- cj(DD,
               level_order = c("descending"),
               by = ~Gender)
 
+# Subset data to grey out points
+grey_mm_diff <- DD_mm_diff %>%
+  filter(lower < 0 & upper > 0)
+
 # Plot marginal means graph
 mm_1 <- plot(DD_mm) +
   facet_wrap(~BY, ncol = 2L) +
@@ -324,7 +328,7 @@ mm_1 <- plot(DD_mm) +
         panel.grid.minor = element_line(size = 0.5, linetype = 'solid', colour = "white"),
     axis.text.y = element_text(face = boldpattern)) +
     scale_y_discrete(labels = y_labs) +
-    geom_point(size=1.75) +
+    geom_point(size=1.6) +
   geom_vline(xintercept = 0.5, linetype="dotted", color = "red")
 
 # Plot differences in mm graph
@@ -344,6 +348,8 @@ mm_2 <- plot(DD_mm_diff) +
     axis.text.y = element_text(face = boldpattern)) +
     scale_y_discrete(labels = y_labs) +
     geom_point(size=1.75) +
+    geom_point(data = grey_mm_diff, size = 1.75) +
+    geom_errorbarh(data=grey_mm_diff, aes(xmin = lower, xmax = upper), color = 'grey', height = 0) +
   geom_vline(xintercept = 0, linetype="dotted", color = "red")
 
 # Create character string to rename y axis.
@@ -354,6 +360,10 @@ y_labs2 <- rev(c("Age:", "42", "57", "64", "79",
             "Hometown:", "Outside",
             "Party:", "DPJ", "JCP", "Komeito", "LDP",
             "Prior Occupation:", "Business executive", "Celebrity", "Local government employee", "National government employee", "Prefectural assembly member", "Prefectural governor"))
+
+# Subset for greyed out points
+grey_amce <- DD_diff %>%
+  filter(lower < 0 & upper > 0)
 
 # Plot just the AMCE difference graph
 z <- plot(DD_diff) +
@@ -372,6 +382,8 @@ z <- plot(DD_diff) +
     axis.text.y = element_text(face = boldpattern2)) +
   scale_y_discrete(labels = y_labs2) +
     geom_point(size=1.75) +
+    geom_point(data = grey_amce, size = 1.75) +
+    geom_errorbarh(data=grey_amce, aes(xmin = lower, xmax = upper), color = 'grey', height = 0) +
   geom_vline(xintercept = 0, linetype="dotted", color = "red")
 ```
 
@@ -380,7 +392,7 @@ z <- plot(DD_diff) +
 # Refer to earlier chunk re: explanation for setting warning = FALSE.
 
 # Display the plots using patchwork package
-mm_1 + mm_2 + plot_layout(widths = c(2, 1))
+mm_1 + mm_2 + plot_layout(widths = c(1, 1))
 ```
 
 *Figure 2*: The top graphic displays the marginal means graph. As you can see, notable differences between the genders include the effect of political experience. Interestingly, in the marginal means graph (we shall denote them as MM graphs), the baseline of "No experience" seems to punish men more so than women. This is interesting because women are more likely than men to be part of dynastic political families, and supports the notion that young first-timer female candidates hit a so-called "bamboo ceiling" as their political careers lengthen, according to Horiuchi *et al.* (@R-yamamoto).
