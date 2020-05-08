@@ -1,7 +1,7 @@
 ---
 title: "Replication Paper: 'Identifying voter preferences for politicians’ personal attributes: a conjoint experiment in Japan'"
 author: "Evelyn Cai"
-date: "4/28/2020"
+date: "5/8/2020"
 output:
   bookdown::pdf_document2:
     includes:  
@@ -179,11 +179,11 @@ Horiuchi, Smith, & Yamamoto (2020) were also interested in the complexities intr
 
 
 
-Japan is a useful case study because of its high “intra-country variation” in electoral systems (@electoral). Horiuchi, Smith, & Yamamoto (2020) tested for whether knowledge of said electoral systems would impact voter preferences using a randomly assigned experiment, and found that there were significant and consistent indications of voter preferences even without priming with knowledge of electoral systems (@R-yamamoto). They conducted a conjoint survey, in which different candidate attributes were completely randomized and presented for a participant to choose the candidate of their choice. This method of conjoint experiments as applied to political science was popularized by Hainmueller *et al.* (@R-conjointmethod). Another method employed in the replication paper was compared observational data of actual politicians to the conjoint experiment results. This comparison revealed that the actual representatives in Japan’s parliament are very different from the “ideal” candidates of the participants, demonstrating that other variables that weren’t captured in the conjoint experiment play a large role in elections, such as party candidate recruitment systems (@R-yamamoto).
+Japan is a useful case study because of its high “intra-country variation” in electoral systems (@electoral). Four different electoral systems encompass varying geographical areas, and in addition, voters can vote for a candidate, a party, or both, depending on the system (@R-yamamoto). Horiuchi, Smith, & Yamamoto (2020) tested for whether knowledge of said electoral systems would impact voter preferences using a randomly assigned experiment, and found that there were consistent indications of voter preferences among respondents who were primed with knowledge on different electoral systems, but no significant differences were noted between the SNTV tier and PR tier of the House of Councillors, or the SMD and PR tiers of the House of Representatives, which was a surprising finding (@R-yamamoto). They conducted a conjoint survey, in which different candidate attributes were completely randomized and presented for a participant to choose the candidate of their choice. This method of conjoint experiments as applied to political science was popularized by Hainmueller *et al.* (@R-conjointmethod). Another method employed in the replication paper was compared observational data of actual politicians to the conjoint experiment results. This comparison revealed that the actual representatives in Japan’s parliament are very different from the “ideal” candidates of the participants, demonstrating that other variables that weren’t captured in the conjoint experiment play a large role in elections, such as party candidate recruitment systems (@R-yamamoto).
 
 
 
-Horiuchi, Smith, & Yamamoto (2020) also checked the conjoint data against the actual data of real elected politicians and drew conclusions from the similarities and differences expressed in terms of preferred candidate attributes. Additionally, there were controls for knowledge priming in their conjoint experiment. A control group had no sort of priming about Japan’s electoral systems, whereas a treatment group was primed with knowledge about Japan’s electoral systems (such as the relationship between voting for a party and proportional representation). They found that there was only one of 56 statistically significant differences in attribute preferences. However, interestingly enough, the actual observations of elected candidates do reveal that there is a discrepancy in the type of candidate elected when constituents are aware of how electoral systems function versus when they are unaware. To parse out the interaction effects of features such as experience and age with the gender variable, the authors calculated ACIEs for the gender variable. The results are displayed below, and reveal that male and female candidates are in fact rewarded/ punished differently based on gender. This finding facilitated the authors' conclusion that external factors, such as party recruitment tactics, are key in influencing voter preferences, rather than electoral systems directly influencing voter preferences as a nature of their configurations.
+Horiuchi, Smith, & Yamamoto (2020) also checked the conjoint data against the actual data of real elected politicians and drew conclusions from the similarities and differences expressed in terms of preferred candidate attributes. Additionally, there were controls for knowledge priming in their conjoint experiment. Participants were assigned different priming treatments, each of which would provide information on one electoral system's rules They found that there was only one of 56 statistically significant differences in attribute preferences. However, interestingly enough, the actual observations of elected candidates do reveal that there is a discrepancy in the type of candidate elected when constituents are aware of how electoral systems function versus when they are unaware. To parse out the interaction effects of features such as experience and age with the gender variable, the authors calculated ACIEs for the gender variable. The results are displayed below, and reveal that male and female candidates are in fact rewarded/ punished differently based on gender. This finding facilitated the authors' conclusion that external factors, such as party recruitment tactics, are key in influencing voter preferences, rather than electoral systems directly influencing voter preferences as a nature of their configurations.
 
 ```{r conjoint_data, include = FALSE, cache = TRUE}
 
@@ -238,13 +238,13 @@ boldpattern2 <- rev(c('bold', 'plain', 'plain', 'plain', 'plain',
                  'bold', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain'))
 
 DD_cj <- cj(DD,
-            formula = Y.1 ~ Age + Experience + Education + Education + Hometown + Party + Previous_Occupation,
+            formula = Y.1 ~ Age + Experience + Education + Hometown + Party + Previous_Occupation,
             estimate = "amce",
             level_order = c("descending"),
             by = ~Gender)
 
 DD_diff <- cj(DD,
-              formula = Y.1 ~ Age + Experience + Education + Education + Hometown + Party + Previous_Occupation,
+              formula = Y.1 ~ Age + Experience + Education + Hometown + Party + Previous_Occupation,
               estimate = "amce_differences",
               level_order = c("descending"),
               by = ~Gender)
@@ -282,7 +282,117 @@ x
 
 ## Replication 
 
-Thanks to the available data and code, written primarily in base R, I was able to replicate the main findings. The key differences in the provided data and my processing code is the use of `tidyverse` packages. Tidyverse is a library that collects various open-source packages, which make data cleaning, analysis, and visualization much easier (@tidyverse). For example, in constructing the conjoint analyses plots, I utilized the `cregg` package developed by Thomas Leeper, which automatically combines the calculation of AMCEs, MMs, and more, and `ggplot2` plotting functionalities. Thank you to the authors for their clean, easily replicable code!
+Thanks to the available data and code, written primarily in base R, I was able to replicate the main findings. The area I failed to replicate was the AMCE calculations of "Parent Political Background." A warning message displayed whenever I attempted to calculate AMCEs for this variable, indicating that my recoding of that variable could have been faulty; however, I could not track down the cause of this error. Ultimately, I chose to omit this variable from my calculations and display, as the original paper shows that none of the feature levels are significant at the 95% level. However, in the future, exploring why this one variable seemed to be incompatible with AMCE calculation functions would be very helpful and contribute to more accurate replications. I also utilized tools from the `tidyverse` library. Tidyverse is a library that consolidates various open-source packages, which make data cleaning, analysis, and visualization much easier (@tidyverse). For example, in constructing the conjoint analyses plots, I utilized the `cregg` package developed by Thomas Leeper, which automatically combines the calculation of AMCEs, MMs, and more, with `ggplot2` plotting functionalities. Thank you to the authors for their clean, easily replicable code!
+
+```{r priming_amce, include = FALSE, cache = TRUE}
+
+# Subset for SNTV, PR (upper) and SMD, PR tiers (lower)
+
+upper <- DD %>%
+  filter(house == "upper") %>%
+  mutate(dist = case_when(dist == TRUE ~ "SNTV Tier",
+                          TRUE ~ "PR Tier"))
+
+lower <- DD %>%
+  filter(house == "lower") %>%
+  mutate(dist = case_when(dist == TRUE ~ "SMD Tier",
+                          TRUE ~ "PR Tier"))
+
+# Calculate AMCEs and differences for each of the HC and HR
+upper_amce <- cj(upper,
+            formula = Y.1 ~ Age + Experience + Gender + Education + Hometown + Party + Previous_Occupation,
+            estimate = "amce",
+            level_order = c("descending"),
+            by = ~dist)
+
+upper_diff <- cj(upper,
+              formula = Y.1 ~ Age + Experience + Gender + Education + Hometown + Party + Previous_Occupation,
+              estimate = "amce_differences",
+              level_order = c("descending"),
+              by = ~dist)
+lower_amce <- cj(lower,
+            formula = Y.1 ~ Age + Experience + Gender + Education + Hometown + Party + Previous_Occupation,
+            estimate = "amce",
+            level_order = c("descending"),
+            by = ~dist)
+
+lower_diff <- cj(lower,
+              formula = Y.1 ~ Age + Experience + Gender + Education + Hometown + Party + Previous_Occupation,
+              estimate = "amce_differences",
+              level_order = c("descending"),
+              by = ~dist)
+
+# Create character vectors to label the AMCEs per priming group, which differs
+# from previously defined vectors in its inclusion of gender.
+
+y_labs3 <- rev(c("Age:", "(Baseline = 30)", "42", "57", "64", "79",
+            "Experience:", "(Baseline = No experience)", "Formerly in office, 1 term", "Currently in office, 1 term", "Formerly in office, 2 terms", "Currently in office, 2 terms", "Formerly in office, 3+ terms", "Currently in office, 3+ terms",
+            "Gender:", "(Baseline = Male)", "Female",
+            "Highest Educational Attainment:", "(Baseline = High school)", "Local public univeristy", "Prestigious private university", "University of Tokyo", 
+            "Hometown:", "(Baseline = Inside)", "Outside",
+            "Party:", "(Baseline = Independent)", "DPJ", "JCP", "Komeito", "LDP",
+            "Prior Occupation:", "(Baseline = company employee)", "Business executive", "Celebrity", "Local government employee", "National government employee", "Prefectural assembly member", "Prefectural governor"))
+
+boldpattern3 <- rev(c('bold', 'plain', 'plain', 'plain', 'plain', 'plain',
+                 'bold', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+                 'bold', 'plain', 'plain',
+                 'bold', 'plain', 'plain', 'plain', 'plain',
+                 'bold', 'plain', 'plain',
+                 'bold', 'plain', 'plain', 'plain', 'plain', 'plain',
+                 'bold', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain'))
+
+priming_upper <- plot(rbind(upper_amce, upper_diff)) +
+  ggplot2::facet_wrap(~BY, ncol = 3L) +
+  ggplot2::labs(title = "AMCEs and differences for the House of Councillors") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text = element_text(size=10),
+        panel.background = element_rect(fill = "gray95",
+                                        colour = "gray95",
+                                        size = 2,
+                                        linetype = "solid"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    axis.text.y = element_text(face = boldpattern3)) +
+  scale_x_continuous(seq(-.3, .1, by = 0.1), labels = c("-.3", "-.2", "-.1", "0", ".1")) +
+  scale_y_discrete(labels = y_labs3) +
+  geom_point(size=1.75) +
+  geom_vline(xintercept = 0, linetype="dotted", color = "red")
+
+priming_lower <- plot(rbind(lower_amce, lower_diff)) +
+  ggplot2::facet_wrap(~BY, ncol = 3L) +
+  ggplot2::labs(title = "AMCEs and differences for the House of Representatives",
+                caption = "Data from Horiuchi, Smith, & Yamamato via Dataverse") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text = element_text(size=10),
+        panel.background = element_rect(fill = "gray95",
+                                        colour = "gray95",
+                                        size = 2,
+                                        linetype = "solid"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    axis.text.y = element_text(face = boldpattern3)) +
+  scale_x_continuous(seq(-.3, .1, by = 0.1), labels = c("-.3", "-.2", "-.1", "0", ".1")) +
+  scale_y_discrete(labels = y_labs3) +
+  geom_point(size=1.75) +
+  geom_vline(xintercept = 0, linetype="dotted", color = "red")
+```
+
+```{r display priming_charts, echo = FALSE, warning = FALSE, fig.height = 17, fig.width = 13}
+
+# Use patchwork to display
+priming_upper / priming_lower
+
+```
+
+\linespread{1}\selectfont
+
+*Figure 2*: This is a replication of Figure 2 on page 87 of the original paper. The only difference to note is the omittance of parent political background and positioning differences. My replication switched the positions of PR Tier and SNTV Tier for the House of Councillors, and the positions of PR Tier and SMD Tier for the House of Representatives, as the `plot` function likely orders the facet grid alphabetically. Notably, the comparison graphs (the last ones on the right) do not show significant differences among groups that were primed with different information.
+
+\linespread{2}\selectfont
 
 ## Extension
 
@@ -290,7 +400,9 @@ Thanks to the available data and code, written primarily in base R, I was able t
 
 According to Leeper *et al.* (2019), a flaw with interpreting "differences in conditional AMCEs as differences in underlying preferences" exists because of how the subgroups that are being compared are chosen, and whether there are any meaningful *absolute* differences (@leeper). Finding the marginal means, then, are useful because there are no baseline values for comparison, but rather allows all variable levels to be compared in a relative sense. 
 
-```{r mm, echo=FALSE, cache= FALSE, warning = FALSE}
+
+
+```{r mm, echo=FALSE, warning = FALSE}
 
 # See above explanation for setting warning = FALSE.
 
@@ -333,7 +445,8 @@ mm_1 <- plot(DD_mm) +
 
 # Plot differences in mm graph
 mm_2 <- plot(DD_mm_diff) +
-  labs(title = "Difference in Marginal\nMeans by Gender",
+  facet_wrap(~BY, ncol = 1L) +
+  labs(title = "",
                 caption = "Data from Horiuchi, Smith, & Yamamato via Dataverse") +
   theme_minimal() +
   theme(legend.position = "none",
@@ -345,7 +458,7 @@ mm_2 <- plot(DD_mm_diff) +
                                         linetype = "solid"),
         panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"), 
         panel.grid.minor = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    axis.text.y = element_text(face = boldpattern)) +
+    axis.text.y = element_blank()) +
     scale_y_discrete(labels = y_labs) +
     geom_point(size=1.75) +
     geom_point(data = grey_mm_diff, size = 1.75) +
@@ -360,14 +473,103 @@ y_labs2 <- rev(c("Age:", "42", "57", "64", "79",
             "Hometown:", "Outside",
             "Party:", "DPJ", "JCP", "Komeito", "LDP",
             "Prior Occupation:", "Business executive", "Celebrity", "Local government employee", "National government employee", "Prefectural assembly member", "Prefectural governor"))
+```
 
-# Subset for greyed out points
-grey_amce <- DD_diff %>%
-  filter(lower < 0 & upper > 0)
+```{r display_2, echo = FALSE, warning = FALSE, fig.width= 12, fig.height = 8.5}
 
-# Plot just the AMCE difference graph
-z <- plot(DD_diff) +
-  labs(title = "Difference in AMCEs\nby Gender",
+# Refer to earlier chunk re: explanation for setting warning = FALSE.
+
+# Display the plots using patchwork package
+mm_1 + mm_2 + plot_layout(ncol = 2, widths = c(2, 1))
+```
+
+\linespread{1}\selectfont
+
+*Figure 3*: The top graphic displays the marginal means graph for gender ACIEs, or the average marginal interaction effects (AMIEs). As you can see, notable differences between the genders include the effect of political experience. Interestingly, in the marginal means graph (we shall denote them as MM graphs), the baseline of "No experience" seems to punish men more so than women. This is interesting because women are more likely than men to be part of dynastic political families, and supports the notion that young first-timer female candidates hit a so-called "bamboo ceiling" as their political careers lengthen, according to Horiuchi *et al.* (@R-yamamoto). The only major difference between the AMCE differences and marginal means differences is in the Experience attribute. The original AMCE differences plot revealed that men were rewarded compared to women for being a current incumbent with 3+ terms of experience, at a significant level. However, the marginal means differences does not show a significant difference in this feature level, but a significant difference in the 'No experience' level.
+
+```{r priming_mms, include = FALSE, cache = TRUE}
+
+# Calculate MMs and differences for each of the HC and HR
+upper_mm <- cj(upper,
+            formula = Y.1 ~ Age + Experience + Gender + Education + Hometown + Party + Previous_Occupation,
+            estimate = "mm",
+            level_order = c("descending"),
+            by = ~dist)
+
+upper_mm_diff <- cj(upper,
+              formula = Y.1 ~ Age + Experience + Gender + Education + Hometown + Party + Previous_Occupation,
+              estimate = "mm_differences",
+              level_order = c("descending"),
+              by = ~dist)
+lower_mm <- cj(lower,
+            formula = Y.1 ~ Age + Experience + Gender + Education + Hometown + Party + Previous_Occupation,
+            estimate = "mm",
+            level_order = c("descending"),
+            by = ~dist)
+
+lower_mm_diff <- cj(lower,
+              formula = Y.1 ~ Age + Experience + Gender + Education + Hometown + Party + Previous_Occupation,
+              estimate = "mm_differences",
+              level_order = c("descending"),
+              by = ~dist)
+
+priming_mm_upper <- plot(upper_mm) +
+  ggplot2::facet_wrap(~BY, ncol = 2L) +
+  ggplot2::labs(title = "Marginal means and differences for the House of Councillors") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text = element_text(size=10),
+        panel.background = element_rect(fill = "gray95",
+                                        colour = "gray95",
+                                        size = 2,
+                                        linetype = "solid"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    axis.text.y = element_text(face = boldpattern3)) +
+  scale_y_discrete(labels = y_labs3) +
+  geom_point(size=1.75) +
+  geom_vline(data = upper_mm, xintercept = 0.5, linetype="dotted", color = "red")
+
+priming_mm_diff_upper <- plot(upper_mm_diff) +
+  facet_wrap(~BY, ncol = 1L) +
+  ggplot2::labs(title = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text = element_text(size=10),
+        panel.background = element_rect(fill = "gray95",
+                                        colour = "gray95",
+                                        size = 2,
+                                        linetype = "solid"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    axis.text.y = element_blank()) +
+  scale_y_discrete(labels = y_labs3) +
+  geom_point(size=1.75) +
+  geom_vline(xintercept = 0, linetype="dotted", color = "red")
+
+priming_mm_lower <- plot(lower_mm) +
+  ggplot2::facet_wrap(~BY, ncol = 2L) +
+  ggplot2::labs(title = "Marginal means and differences for the House of Representatives") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text = element_text(size=10),
+        panel.background = element_rect(fill = "gray95",
+                                        colour = "gray95",
+                                        size = 2,
+                                        linetype = "solid"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    axis.text.y = element_text(face = boldpattern3)) +
+  scale_y_discrete(labels = y_labs3) +
+  geom_point(size=1.75) +
+  geom_vline(data = upper_mm, xintercept = 0.5, linetype="dotted", color = "red")
+
+priming_mm_diff_lower <- plot(lower_mm_diff) +
+  facet_wrap(~BY, ncol = 1L) +
+  ggplot2::labs(title = "",
                 caption = "Data from Horiuchi, Smith, & Yamamato via Dataverse") +
   theme_minimal() +
   theme(legend.position = "none",
@@ -379,41 +581,29 @@ z <- plot(DD_diff) +
                                         linetype = "solid"),
         panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"), 
         panel.grid.minor = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    axis.text.y = element_text(face = boldpattern2)) +
-  scale_y_discrete(labels = y_labs2) +
-    geom_point(size=1.75) +
-    geom_point(data = grey_amce, size = 1.75) +
-    geom_errorbarh(data=grey_amce, aes(xmin = lower, xmax = upper), color = 'grey', height = 0) +
+    axis.text.y = element_blank()) +
+  scale_y_discrete(labels = y_labs3) +
+  geom_point(size=1.75) +
   geom_vline(xintercept = 0, linetype="dotted", color = "red")
 ```
 
-```{r display_2, echo = FALSE, warning = FALSE, fig.width= 10, fig.height = 8.5}
+```{r display_priming_mm, echo = FALSE, warning = FALSE, fig.height = 17, fig.width = 13}
 
-# Refer to earlier chunk re: explanation for setting warning = FALSE.
-
-# Display the plots using patchwork package
-mm_1 + mm_2 + plot_layout(widths = c(1, 1))
-```
-
-*Figure 2*: The top graphic displays the marginal means graph. As you can see, notable differences between the genders include the effect of political experience. Interestingly, in the marginal means graph (we shall denote them as MM graphs), the baseline of "No experience" seems to punish men more so than women. This is interesting because women are more likely than men to be part of dynastic political families, and supports the notion that young first-timer female candidates hit a so-called "bamboo ceiling" as their political careers lengthen, according to Horiuchi *et al.* (@R-yamamoto).
-
-```{r display_3, echo = FALSE, warning = FALSE, fig.width=8.5, fig.height=6}
-
-# Refer to earlier chunk re: explanation for setting warning = FALSE.
-
-# Patchwork align the difference plots
-
-mm_2 + z + plot_layout(widths = c(1, 1))
+# Use patchwork to display
+(priming_mm_upper + priming_mm_diff_upper + plot_layout(ncol = 2, widths = c(2,1))) / 
+(priming_mm_lower + priming_mm_diff_lower + plot_layout(ncol = 2, widths = c(2,1)))
 
 ```
 
-*Figure 3*: Side-by-side comparison of the marginal means differences graph and the difference in AMCE graph.
+*Figure 4*: Displayed above is the marginal means plot for different priming groups. Consistent with Horiuchi, Smith, & Yamamoto's (2020) findings, there are not significant differences between priming groups. The only significant differences between the AMCE and marginal means plots are with the "Celebrity" feature level for prior occupation and the "42" feature level for age between the SMD and PR levels. 
+
+\linespread{2}\selectfont
 
 ## Conclusion
 
 
 
-Through this replication of Horiuchi, Smith, & Yamamoto's (2020) paper, I was able to replicate their main findings. There were significant voter preferences consistent even across the treatment and control groups, which received information regarding different electoral systems. Some of these observations include a preference for non-celebrity candidates, candidates from within the prefecture, and younger political candidates. There was no gender preference, all other attributes held equal. 
+Through this replication of Horiuchi, Smith, & Yamamoto's (2020) paper, I was able to replicate their main findings. There were significant voter preferences consistent across the treatment groups, all of which received different information about different electoral systems. Some of these observations include a preference for non-celebrity candidates, candidates from within the prefecture, and younger political candidates. There was no gender preference, all other attributes held equal. 
 
 
 
@@ -421,13 +611,11 @@ However, observational data contradicts these consistent preferences found in co
 
 
 
-My extension of the paper looked at marginal means instead of AMCEs. I was most interested in comparing the difference in marginal means for female and male candidates against the difference in AMCEs for female and male candidates. 
+My extension of the paper looked at marginal means and average marginal interaction effects instead of average marginal component effects and average component interaction effects. Through looking at the marginal means, I have found observations consistent with the original paper's and new significant points of interest, such as the reward for younger politicians in SMD tiers compared to PR tiers. Future steps would involve clarifying why the "Parent Political Background" variable was incompatible with the AMCE calculating function or what went wrong in my recoding of the variable, to provide a complete picture of the average marginal effects of candidate attributes on voter preferences.
 
 ## Appendix
 
-
-
-Results from Horiuchi, Smith, & Yamamoto (2020) were successfully replicated. As an example, here is Figure A.1 from page 2 of the online Appendix. Below it is the co-correlation matrix as displayed on Page 7 of the online Appendix. 
+Results from Horiuchi, Smith, & Yamamoto (2020) were successfully replicated. As an example, here is Figure A.1 from page 2 of the online Appendix.
 
 ```{r mosaic, echo = FALSE, fig.height = 3, fig.width = 3}
 
@@ -568,48 +756,10 @@ age_DD_lo_win
 age_DD_up_win
 ```
 
-*Figure 4*: The above eight mosaic plots subset by gender and age. HR represents House of Representatives, the lower chamber of Japanese parliament, whereas HC represents the House of Councillors, the upper chamber of Japanese parliament. The figures also compare the share of candidates that ran in SNTV (multi-member)/PR districts versus the proportion of winners from either district.
+\linespread{1}\selectfont
 
-```{r correlation_matrix, echo = FALSE}
-# Make correlation matrix (Code mainly unaltered from replication file)
-
-DDD <- list(DD_lo, DD_lo_win, DD_up, DD_up_win)
-cormats <- as.list(rep(NA,4))
-
-for(i in 1:length(DDD)){
-  DDD[[i]]$experience_bin <- DDD[[i]]$experience > 0
-  DDD[[i]]$college <- DDD[[i]]$educ_lab != "High school"
-  DDD[[i]]$todai <- DDD[[i]]$educ_lab == "University of Tokyo"
-  DDD[[i]]$home_bin <- DDD[[i]]$home_lab == "Born inside district"
-  DDD[[i]]$dynastic_bin <- DDD[[i]]$dynastic_lab != "None"
-  DDD[[i]]$LDP <- DDD[[i]]$party_en == "LDP"
-  DDD[[i]]$DPJ <- DDD[[i]]$party_en == "DPJ"
-  DDD[[i]]$JCP <- DDD[[i]]$party_en == "JCP"
-  DDD[[i]]$locpol <- DDD[[i]]$pref_assy == "Yes" | DDD[[i]]$pref_gov
-  atts <- subset(DDD[[i]], select = c("age", "experience_bin", "female", "college", "todai", "home_bin", "dynastic_bin", "LDP", "DPJ", "JCP", "locpol"))
-  names(atts) <- c("Age", "Exp.", "Gender", "Any\n College", "U of\n Tokyo", "Local", "Dynastic", "LDP", "DPJ", "JCP", "Loc. Pol.\n Exp.")
-  cormats[[i]] <- cor(atts, use="pairwise")
-}
-
-titles <- c("HR Candidates", "HR Winners", "HC Candidates", "HC Winners")
-
-for(i in 1:length(cormats)){
-  cormats[[i]][4:5,4:5] <- NA
-  cormats[[i]][8:10,8:10] <- NA
-}
-
-par(mfrow = c(1,2))
-for(i in c(2,4)){
-  suppressWarnings(corrplot(cormats[[i]], method = "color", type = "lower", tl.pos = "ld", cl.pos = "n", tl.col = "black", addCoef.col = "black",
-                            diag = FALSE, title = titles[i], mar = c(0.02,0.02,02,0.02), na.label = " ", tl.cex = 0.7, number.cex = 0.6))
-}
-
-```
-
-*Figure 5*: Co-correlation matrix providing the correlation coefficients between two variables. Negative values are shaded in red and positive values are shaded in blue. The intensity of the color corresponds to the magnitude of the correation coefficient.
+*Figure 5*: The above eight mosaic plots subset by gender and age of real candidates that ran in 2013 and 2014 elections. HR represents House of Representatives, the lower chamber of Japanese parliament, whereas HC represents the House of Councillors, the upper chamber of Japanese parliament. The figures also compare the share of candidates that ran in SNTV (multi-member)/PR districts versus the proportion of winners from either district.
 
 \pagebreak
-
-\linespread{1}\selectfont
 
 ## Bibliography
