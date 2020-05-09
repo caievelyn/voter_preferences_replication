@@ -213,7 +213,7 @@ DD <- DD %>%
 
 y_labs <- rev(c("Age:", "(Baseline = 30)", "42", "57", "64", "79",
             "Experience:", "(Baseline = No experience)", "Formerly in office, 1 term", "Currently in office, 1 term", "Formerly in office, 2 terms", "Currently in office, 2 terms", "Formerly in office, 3+ terms", "Currently in office, 3+ terms", 
-            "Highest Educational Attainment:", "(Baseline = High school)", "Local public univeristy", "Prestigious private university", "University of Tokyo", 
+            "Highest Educational Attainment:", "(Baseline = High school)", "Local public university", "Prestigious private university", "University of Tokyo", 
             "Hometown:", "(Baseline = Inside)", "Outside",
             "Party:", "(Baseline = Independent)", "DPJ", "JCP", "Komeito", "LDP",
             "Prior Occupation:", "(Baseline = company employee)", "Business executive", "Celebrity", "Local government employee", "National government employee", "Prefectural assembly member", "Prefectural governor"))
@@ -328,7 +328,7 @@ lower_diff <- cj(lower,
 y_labs3 <- rev(c("Age:", "(Baseline = 30)", "42", "57", "64", "79",
             "Experience:", "(Baseline = No experience)", "Formerly in office, 1 term", "Currently in office, 1 term", "Formerly in office, 2 terms", "Currently in office, 2 terms", "Formerly in office, 3+ terms", "Currently in office, 3+ terms",
             "Gender:", "(Baseline = Male)", "Female",
-            "Highest Educational Attainment:", "(Baseline = High school)", "Local public univeristy", "Prestigious private university", "University of Tokyo", 
+            "Highest Educational Attainment:", "(Baseline = High school)", "Local public university", "Prestigious private university", "University of Tokyo", 
             "Hometown:", "(Baseline = Inside)", "Outside",
             "Party:", "(Baseline = Independent)", "DPJ", "JCP", "Komeito", "LDP",
             "Prior Occupation:", "(Baseline = company employee)", "Business executive", "Celebrity", "Local government employee", "National government employee", "Prefectural assembly member", "Prefectural governor"))
@@ -469,7 +469,7 @@ mm_2 <- plot(DD_mm_diff) +
 
 y_labs2 <- rev(c("Age:", "42", "57", "64", "79",
             "Experience:",  "Formerly in office, 1 term", "Currently in office, 1 term", "Formerly in office, 2 terms", "Currently in office, 2 terms", "Formerly in office, 3+ terms", "Currently in office, 3+ terms",
-            "Highest Educational Attainment:", "Local public univeristy", "Prestigious private university", "University of Tokyo", 
+            "Highest Educational Attainment:", "Local public university", "Prestigious private university", "University of Tokyo", 
             "Hometown:", "Outside",
             "Party:", "DPJ", "JCP", "Komeito", "LDP",
             "Prior Occupation:", "Business executive", "Celebrity", "Local government employee", "National government employee", "Prefectural assembly member", "Prefectural governor"))
